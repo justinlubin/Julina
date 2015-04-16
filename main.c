@@ -18,14 +18,40 @@ int main(int argc, char **argv) {
     Matrix *e = ref(d);
     Matrix *f = rref(d);
 
+    double gi[] = {2, 1, 1, 0, 3, 0, 3, 1, 2};
+    Matrix *g = new_matrix(gi, 3, 3);
+
+    Matrix *h = rref(g);
+
+    double ii[] = {0, 0, 0, 0, 0, 3};
+    Matrix *i = new_matrix(ii, 3, 2);
+
+    Matrix *j = ref(i);
+
     print_matrix(Z);
+    printf("Rank: %d\n\n", rank(Z));
     print_matrix(I);
+    printf("Rank: %d\n\n", rank(I));
     print_matrix(a);
+    printf("Rank: %d\n\n", rank(a));
     print_matrix(b);
+    printf("Rank: %d\n\n", rank(b));
     print_matrix(c);
+    printf("Rank: %d\n\n", rank(c));
     print_matrix(d);
+    printf("Rank: %d\n\n", rank(d));
     print_matrix(e);
+    printf("Rank: %d\n\n", rank(e));
     print_matrix(f);
+    printf("Rank: %d\n\n", rank(f));
+    print_matrix(g);
+    printf("Rank: %d\n\n", rank(g));
+    print_matrix(h);
+    printf("Rank: %d\n\n", rank(h));
+    print_matrix(i);
+    printf("Rank: %d\n\n", rank(i));
+    print_matrix(j);
+    printf("Rank: %d\n\n", rank(j));
 
     free_matrix(Z);
     free_matrix(I);
@@ -35,4 +61,8 @@ int main(int argc, char **argv) {
     free_matrix(d);
     free_matrix(e);
     free_matrix(f);
+    free_matrix(g);
+    free_matrix(h);
+    free_matrix(i);
+    free_matrix(j);
 }

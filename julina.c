@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "julina.h"
 
 #define MATRIX_SPACING 8
@@ -20,9 +21,8 @@ static void repeat_print(const char *s, int n) {
     }
 }
 
-
 static int is_zero(double d) {
-    return abs(d) < ZERO_EPSILON;
+    return fabs(d) < ZERO_EPSILON;
 }
 
 /* API */
@@ -206,22 +206,39 @@ void add_scaled_row(Matrix *a, int r1, int r2, double c) {
 
 Matrix *ref(const Matrix *a) {
     Matrix *b = copy_matrix(a);
-    int k, i, valid;
-    for (k = 0; k < b->rows - 1; k++) {
-        if (is_zero(b->array[k][k])) {
-            valid = 0;
+    int k, i;
+    for (k = 0; k < b->rows; k++) {
+        // Move zero rows to bottom of matrix.
+        if (is_row_zero(b, k)) {
             for (i = k + 1; i < b->rows; i++) {
                 if (!is_row_zero(b, i)) {
                     swap_rows(b, k, i);
+                    break;
                 }
             }
-            if (!valid) {
-                // All the remaining rows are full of zeros.
+            // All remaining rows are zero.
+            if (i == b->rows) {
                 break;
             }
         }
+        // Make sure we are operating on a row defined for position k.
+        if (is_zero(b->array[k][k])) {
+            for (i = k + 1; i < b->rows; i++) {
+                if (!is_zero(b->array[i][k])) {
+                    swap_rows(b, k, i);
+                    break;
+                }
+            }
+            // There is no valid row for position k.
+            if (i == b->rows) {
+                continue;
+            }
+        }
+        // Scale position k to 1.
+        scale_row(b, k, 1/b->array[k][k]);
+        // Eliminate position k from all rows below.
         for (i = k + 1; i < b->rows; i++) {
-            add_scaled_row(b, k, i, -b->array[i][k] / b->array[k][k]);
+            add_scaled_row(b, k, i, -b->array[i][k]);
         }
     }
     return b;
@@ -234,10 +251,22 @@ Matrix *rref(const Matrix *a) {
         if (is_zero(b->array[k][k])) {
             continue;
         }
-        scale_row(b, k, 1/b->array[k][k]);
+        // Eliminate position k from all rows above.
         for (i = 0; i < k; i++) {
             add_scaled_row(b, k, i, -b->array[i][k]);
         }
     }
     return b;
+}
+
+int rank(const Matrix *a) {
+    Matrix *b = ref(a);
+    int i, nonzero_rows = 0;
+    for (i = 0; i < b->rows; i++) {
+        if (!is_row_zero(b, i)) {
+            nonzero_rows += 1;
+        }
+    }
+    free_matrix(b);
+    return nonzero_rows;
 }

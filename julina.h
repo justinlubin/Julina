@@ -26,4 +26,6 @@ void add_scaled_row(Matrix *a, int r1, int r2, double c);
 Matrix *ref(const Matrix *a);
 Matrix *rref(const Matrix *a);
 
+int rank(const Matrix *a);
+
 #endif

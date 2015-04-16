@@ -2,8 +2,8 @@ CC = gcc
 
 INCLUDES =  
 
-CFLAGS = -g -Wall $(INCLUDES)
-CXXFLAGS = -g -Wall $(INCLUDES)
+CFLAGS = -g -Wall -Werror $(INCLUDES)
+CXXFLAGS = -g -Wall -Werror $(INCLUDES)
 LDFLAGS = -g -lm
 
 main: julina.o main.o
