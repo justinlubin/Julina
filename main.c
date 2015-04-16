@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "linea.h"
+#include "julina.h"
 
 int main(int argc, char **argv) {
     Matrix *Z = zero_matrix(3, 4);

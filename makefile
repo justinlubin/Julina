@@ -6,9 +6,9 @@ CFLAGS = -g -Wall $(INCLUDES)
 CXXFLAGS = -g -Wall $(INCLUDES)
 LDFLAGS = -g -lm
 
-main: linea.o main.o
-main.o: linea.h main.c
-linea.o: linea.h linea.c
+main: julina.o main.o
+main.o: julina.h main.c
+julina.o: julina.h julina.c
 
 .PHONY: clean
 clean:

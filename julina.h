@@ -1,5 +1,5 @@
-#ifndef __LINEA_H__
-#define __LINEA_H__
+#ifndef __JULINA_H__
+#define __JULINA_H__
 
 typedef struct {
     double **array;

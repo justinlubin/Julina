@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "linea.h"
+#include "julina.h"
 
 #define MATRIX_SPACING 8
 #define MATRIX_FORMAT "%-8.3g"
