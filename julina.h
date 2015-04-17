@@ -15,6 +15,7 @@ void free_matrix(Matrix *a);
 void print_matrix(const Matrix *a);
 
 Matrix *add(const Matrix *a, const Matrix *b);
+Matrix *scale(const Matrix *a, double c);
 Matrix *multiply(const Matrix *a, const Matrix *b);
 Matrix *transpose(const Matrix *a);
 

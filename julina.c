@@ -122,6 +122,17 @@ Matrix *add(const Matrix *a, const Matrix *b) {
     return c;
 }
 
+Matrix *scale(const Matrix *a, double c) {
+    Matrix *b = copy_matrix(a);
+    int i, j;
+    for (i = 0; i < b->rows; i++) {
+        for (j = 0; j < b->cols; j++) {
+            b->array[i][j] *= c;
+        }
+    }
+    return b;
+}
+
 Matrix *multiply(const Matrix *a, const Matrix *b) {
     if (a->cols != b->rows) {
         return NULL;
