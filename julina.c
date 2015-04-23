@@ -68,6 +68,17 @@ Matrix *new_matrix(double *array, int rows, int cols) {
     return a;
 }
 
+Matrix *random_matrix(int rows, int cols, int low, int high) {
+    int range = high - low + 1;
+    int size = rows * cols;
+    double random_array[size];
+    int i;
+    for (i = 0; i < size; i++) {
+        random_array[i] = rand() % (range) + low;
+    }
+    return new_matrix(random_array, rows, cols);
+}
+
 Matrix *copy_matrix(const Matrix *a) {
     Matrix *b = zero_matrix(a->rows, a->cols);
     int i, j;
@@ -80,6 +91,10 @@ Matrix *copy_matrix(const Matrix *a) {
 }
 
 void free_matrix(Matrix *a) {
+    if (   a == ERR_INVALID_SIZE
+        || a == ERR_SINGULAR_MATRIX_INVERSE) {
+        return;
+    }
     int i;
     for (i = 0; i < a->rows; i++) {
         free(a->array[i]);
@@ -110,7 +125,7 @@ void print_matrix(const Matrix *a) {
 
 Matrix *add(const Matrix *a, const Matrix *b) {
     if (a->rows != b->rows || a->cols != b->cols) {
-        return NULL;
+        return ERR_INVALID_SIZE;
     }
     Matrix *c = zero_matrix(a->rows, a->cols);
     int i, j;
@@ -135,7 +150,7 @@ Matrix *scale(const Matrix *a, double c) {
 
 Matrix *multiply(const Matrix *a, const Matrix *b) {
     if (a->cols != b->rows) {
-        return NULL;
+        return ERR_INVALID_SIZE;
     }
     int m = a->rows;
     int n = b->cols;
@@ -170,7 +185,7 @@ Matrix *transpose(const Matrix *a) {
 
 Matrix *augment(const Matrix *a, const Matrix *b) {
     if (a->rows != b->rows) {
-        return NULL;
+        return ERR_INVALID_SIZE;
     }
     Matrix *c = zero_matrix(a->rows, a->cols + b->cols);
     int i, j;
@@ -185,6 +200,28 @@ Matrix *augment(const Matrix *a, const Matrix *b) {
     return c;
 }
 
+Matrix *diminish_left(const Matrix *a, int cols) {
+    Matrix *b = zero_matrix(a->rows, cols);
+    int i, j;
+    for (i = 0; i < b->rows; i++) {
+        for (j = 0; j < b->cols; j++) {
+            b->array[i][j] = a->array[i][j];
+        }
+    }
+    return b;
+}
+
+Matrix *diminish_right(const Matrix *a, int cols) {
+    Matrix *b = zero_matrix(a->rows, cols);
+    int i, j;
+    for (i = 0; i < b->rows; i++) {
+        for (j = 0; j < b->cols; j++) {
+            b->array[i][j] = a->array[i][a->cols - cols + j];
+        }
+    }
+    return b;
+}
+
 int is_row_zero(const Matrix *a, int r) {
     int j;
     for (j = 0; j < a->cols; j++) {
@@ -193,6 +230,16 @@ int is_row_zero(const Matrix *a, int r) {
         }
     }
     return 1;
+}
+
+int has_zero_row(const Matrix *a) {
+    int i;
+    for (i = 0; i < a->rows; i++) {
+        if (is_row_zero(a, i)) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void swap_rows(Matrix *a, int r1, int r2) {
@@ -280,4 +327,61 @@ int rank(const Matrix *a) {
     }
     free_matrix(b);
     return nonzero_rows;
+}
+
+// Returns -1 on error.
+double det(const Matrix *a) {
+    if (a->rows != a->cols) {
+        return -1;
+    } else if (a->rows == 2 && a->cols == 2) {
+        return (a->array[0][0] * a->array[1][1] -
+                a->array[0][1] * a->array[1][0]);
+    }
+    Matrix *b;
+    double smaller[(a->rows - 1) * (a->cols - 1)];
+    double determinant = 0;
+    int sign = 1;
+
+    int col, i, j, n;
+    for (col = 0; col < a->cols; col++) {
+        n = 0;
+        for (i = 1; i < a->rows; i++) {
+            for (j = 0; j < a->cols; j++) {
+                if (j == col) {
+                    continue;
+                }
+                smaller[n] = a->array[i][j];
+                n += 1;
+            }
+        }
+        b = new_matrix(smaller, a->rows - 1, a->cols - 1);
+        determinant += sign * a->array[0][col] * det(b);
+        sign *= -1;
+        free_matrix(b);
+    }
+
+    return determinant;
+}
+
+Matrix *inverse(const Matrix *a) {
+    if (a->rows != a->cols) {
+        return ERR_INVALID_SIZE;
+    }
+    Matrix *id = identity_matrix(a->rows);
+    Matrix *aug = augment(a, id);
+    Matrix *flipped = rref(aug);
+    Matrix *left = diminish_left(flipped, a->rows);
+    Matrix *right = diminish_right(flipped, a->rows);
+
+    free_matrix(id);
+    free_matrix(aug);
+    free_matrix(flipped);
+
+    if (has_zero_row(left)) {
+        return ERR_SINGULAR_MATRIX_INVERSE;
+    }
+
+    free_matrix(left);
+
+    return right;
 }

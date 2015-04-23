@@ -1,22 +1,39 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "julina.h"
 
 int main(int argc, char **argv) {
-    double ai[] = {2, -3, 1, 4};
-    Matrix *a = new_matrix(ai, 2, 2);
+    srand(time(NULL));
 
-    double bi[] = {-2, 5};
-    Matrix *b = new_matrix(bi, 2, 1);
+    double aa[] = {2, 0, 1,
+                   -2, 3, 4,
+                   -5, 5, 6};
+    Matrix *a = new_matrix(aa, 3, 3);
+    Matrix *ain = inverse(a);
 
-    double ci[] = {-1, 6, -2, 3};
-    Matrix *c = new_matrix(ci, 2, 2);
+    double bb[] = {1, -1, -2,
+                   2, 4, 5,
+                   6, 0, -3};
+    Matrix *b = new_matrix(bb, 3, 3);
+    Matrix *bin = inverse(b);
 
-    double di[] = {-7, 2};
-    Matrix *d = new_matrix(di, 2, 1);
+    print_matrix(a);
+    if (ain == ERR_SINGULAR_MATRIX_INVERSE) {
+        printf("Inverse of singular matrix.\n");
+    } else {
+        print_matrix(ain);
+    }
 
-    Matrix *ret = add(multiply(a, b), scale(multiply(c, d), -1));
+    print_matrix(b);
+    if (bin == ERR_SINGULAR_MATRIX_INVERSE) {
+        printf("Inverse of singular matrix.\n");
+    } else {
+        print_matrix(bin);
+    }
 
-    print_matrix(ret);
-
-    free_matrix(ret);
+    free_matrix(a);
+    free_matrix(ain);
+    free_matrix(b);
+    free_matrix(bin);
 }
