@@ -341,10 +341,9 @@ int rank(const Matrix *a) {
     return nonzero_rows;
 }
 
-// Returns -1 on error.
 double det(const Matrix *a) {
     if (a->rows != a->cols) {
-        return -1;
+        die("Error: determinant of non-square matrix.");
     } else if (a->rows == 2 && a->cols == 2) {
         return (a->array[0][0] * a->array[1][1] -
                 a->array[0][1] * a->array[1][0]);
