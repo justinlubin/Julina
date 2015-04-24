@@ -90,6 +90,18 @@ Matrix *copy_matrix(const Matrix *a) {
     return b;
 }
 
+Matrix *cramer_ak_matrix(const Matrix *a, const Matrix *b, int k) {
+    if (a->rows != a->cols || a->rows != b->rows) {
+        return ERR_INVALID_SIZE;
+    }
+    Matrix *c = copy_matrix(a);
+    int i;
+    for (i = 0; i < c->rows; i++) {
+        c->array[i][k] = b->array[i][0];
+    }
+    return c;
+}
+
 void free_matrix(Matrix *a) {
     if (   a == ERR_INVALID_SIZE
         || a == ERR_SINGULAR_MATRIX_INVERSE) {
@@ -384,4 +396,23 @@ Matrix *inverse(const Matrix *a) {
     free_matrix(left);
 
     return right;
+}
+
+Matrix *cramer(const Matrix *a, const Matrix *b) {
+    if (a->rows != a->cols || a->rows != b->rows) {
+        return ERR_INVALID_SIZE;
+    }
+    double detA = det(a);
+    if (is_zero(detA)) {
+        return ERR_DETERMINANT_ZERO;
+    }
+    Matrix *x = zero_matrix(a->rows, 1);
+    Matrix *ak;
+    int k;
+    for (k = 0; k < a->cols; k++) {
+        ak = cramer_ak_matrix(a, b, k);
+        x->array[k][0] = det(ak) / detA;
+        free_matrix(ak);
+    }
+    return x;
 }
