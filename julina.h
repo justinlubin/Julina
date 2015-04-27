@@ -9,6 +9,7 @@ typedef struct {
 Matrix *ERR_INVALID_SIZE;
 Matrix *ERR_SINGULAR_MATRIX_INVERSE;
 Matrix *ERR_DETERMINANT_ZERO;
+Matrix *ERR_NOT_AN_EIGENVALUE;
 
 Matrix *zero_matrix(int rows, int cols);
 Matrix *identity_matrix(int n);
@@ -21,6 +22,7 @@ void free_matrix(Matrix *a);
 void print_matrix(const Matrix *a);
 
 Matrix *add(const Matrix *a, const Matrix *b);
+Matrix *subtract(const Matrix *a, const Matrix *b);
 Matrix *scale(const Matrix *a, double c);
 Matrix *multiply(const Matrix *a, const Matrix *b);
 Matrix *transpose(const Matrix *a);
@@ -28,6 +30,7 @@ Matrix *transpose(const Matrix *a);
 Matrix *augment(const Matrix *a, const Matrix *b);
 Matrix *diminish_left(const Matrix *a, int cols);
 Matrix *diminish_right(const Matrix *a, int cols);
+int is_identity(const Matrix *a);
 int is_row_zero(const Matrix *a, int r);
 int has_zero_row(const Matrix *a);
 void swap_rows(Matrix *a, int r1, int r2);
@@ -42,5 +45,9 @@ double det(const Matrix *a);
 Matrix *inverse(const Matrix *a);
 
 Matrix *cramer(const Matrix *a, const Matrix *b);
+
+double inner_product(const Matrix *a, const Matrix *b);
+double dominant_eigenvalue(const Matrix *a, int m);
+Matrix *get_eigenvector(const Matrix *a, double eigenvalue);
 
 #endif

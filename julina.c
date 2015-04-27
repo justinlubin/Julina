@@ -149,6 +149,13 @@ Matrix *add(const Matrix *a, const Matrix *b) {
     return c;
 }
 
+Matrix *subtract(const Matrix *a, const Matrix *b) {
+    Matrix *neg_b = scale(b, -1);
+    Matrix *sub = add(a, neg_b);
+    free_matrix(neg_b);
+    return sub;
+}
+
 Matrix *scale(const Matrix *a, double c) {
     Matrix *b = copy_matrix(a);
     int i, j;
@@ -170,7 +177,8 @@ Matrix *multiply(const Matrix *a, const Matrix *b) {
 
     Matrix *c = zero_matrix(m, n);
 
-    int i, j, k, sigma;
+    int i, j, k;
+    double sigma;
     for (i = 0; i < c->rows; i++) {
         for (j = 0; j < c->cols; j++) {
             sigma = 0;
@@ -233,6 +241,27 @@ Matrix *diminish_right(const Matrix *a, int cols) {
     }
     return b;
 }
+
+int is_identity(const Matrix *a) {
+    if (a->rows != a->cols) {
+        return 0;
+    }
+    int i, j;
+    for (i = 0; i < a->rows; i++) {
+        for (j = 0; j < a->cols; j++) {
+            if (i == j) {
+                if (a->array[i][j] != 1) {
+                    return 0;
+                }
+            } else {
+                if (a->array[i][j] != 0) {
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+} 
 
 int is_row_zero(const Matrix *a, int r) {
     int j;
@@ -414,4 +443,70 @@ Matrix *cramer(const Matrix *a, const Matrix *b) {
         free_matrix(ak);
     }
     return x;
+}
+
+double inner_product(const Matrix *a, const Matrix *b) {
+    if (a->cols != 1 || b->cols != 1 || a->rows != b->rows) {
+        die("Error: Invalid size matrices for inner product.");
+    }
+    Matrix *at = transpose(a);
+    Matrix *mul = multiply(at, b);
+    double ip = mul->array[0][0];
+    free_matrix(at);
+    free_matrix(mul);
+    return ip;
+}
+
+double dominant_eigenvalue(const Matrix *a, int m) {
+    if (a->rows != a->cols) {
+        die("Error: eigenvalue of non-square matrix.");
+    }
+    Matrix *x = zero_matrix(a->rows, 1);
+    int i;
+    for (i = 0; i < x->rows; i++) {
+        x->array[i][0] = 1; // Initial guess
+    }
+    for (i = 0; i < m; i++) {
+        x = multiply(a, x); // [TODO] memory leak
+        x = scale(x, 1 / x->array[0][0]);
+    }
+    Matrix *ax = multiply(a, x);
+    double numerator = inner_product(ax, x);
+    double denominator = inner_product(x, x);
+    free_matrix(ax);
+    return numerator / denominator;
+}
+
+Matrix *get_eigenvector(const Matrix *a, double eigenvalue) {
+    if (a->rows != a->cols) {
+        die("Error: eigenvector of non-square matrix.");
+    }
+    Matrix *z = zero_matrix(a->rows, 1);
+    Matrix *i = identity_matrix(a->rows);
+    Matrix *li = scale(i, eigenvalue);
+    Matrix *sub = subtract(a, li);
+    Matrix *aug = augment(sub, z);
+
+    Matrix *r1 = rref(aug);
+    if (!is_zero(r1->array[r1->rows - 1][r1->cols - 2])) {
+        return ERR_NOT_AN_EIGENVALUE;
+    }
+
+    // Final entry is, for example, 1.
+    r1->array[r1->rows - 1][r1->cols - 1] = 1;
+    r1->array[r1->rows - 1][r1->cols - 2] = 1;
+
+    // Re-solve
+    Matrix *r2 = rref(r1);
+
+    Matrix *k = diminish_right(r2, 1);
+
+    free_matrix(i);
+    free_matrix(li);
+    free_matrix(sub);
+    free_matrix(r1);
+    free_matrix(r2);
+
+    k->array[k->rows - 1][0] = 1;
+    return k;
 }

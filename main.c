@@ -28,15 +28,18 @@ Matrix *read_matrix(char *s) {
 int main(int argc, char **argv) {
     srand(time(NULL));
 
-    Matrix *a = read_matrix("3 3 : 3 2 1 1 -1 3 5 4 -2");
-    Matrix *b = read_matrix("3 1 : 7 3 1");
-    Matrix *x = cramer(a, b);
+    Matrix *a = read_matrix("3 3 : 1 2 1 6 -1 0 -1 -2 -1");
+    double e = 3;
+    Matrix *k = get_eigenvector(a, e);
+
+    if (k == ERR_NOT_AN_EIGENVALUE) {
+        printf("Not an eigenvalue!!!!!!!\n");
+        exit(1);
+    }
 
     print_matrix(a);
-    print_matrix(b);
-    print_matrix(x);
+    print_matrix(k);
 
     free_matrix(a);
-    free_matrix(b);
-    free_matrix(x);
+    free_matrix(k);
 }
