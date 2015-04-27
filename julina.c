@@ -390,9 +390,8 @@ int rank(const Matrix *a) {
 double det(const Matrix *a) {
     if (a->rows != a->cols) {
         die("Error: determinant of non-square matrix.");
-    } else if (a->rows == 2 && a->cols == 2) {
-        return (a->array[0][0] * a->array[1][1] -
-                a->array[0][1] * a->array[1][0]);
+    } else if (a->rows == 1) {
+        return a->array[0][0];
     }
     Matrix *b;
     double smaller[(a->rows - 1) * (a->cols - 1)];
