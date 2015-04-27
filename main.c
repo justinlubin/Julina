@@ -28,11 +28,12 @@ Matrix *read_matrix(char *s) {
 int main(int argc, char **argv) {
     srand(time(NULL));
 
-    Matrix *a = read_matrix("3 3 : 1 1 -2 -1 2 1 0 1 -1");
+    Matrix *evs[] = {read_matrix("3 1 : 1 0 1"),
+                     read_matrix("3 1 : -1 1 1"),
+                     read_matrix("3 1 : 1 2 -1")};
 
+    Matrix *a = orthogonal_matrix(evs, 3);
     print_matrix(a);
-    printf("To the TENTH:\n");
-    print_matrix(matrix_pow(a, 10));
 
     free_matrix(a);
 }

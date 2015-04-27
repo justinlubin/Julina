@@ -102,6 +102,23 @@ Matrix *cramer_ak_matrix(const Matrix *a, const Matrix *b, int k) {
     return c;
 }
 
+Matrix *orthogonal_matrix(const Matrix *eigenvectors[], int n) {
+    int i;
+    for (i = 0; i < n; i++) {
+        if (eigenvectors[i]->rows != n && eigenvectors[i]->cols != 1) {
+            return ERR_INVALID_BASIS;
+        }
+    }
+    // [TODO] memory leak
+    Matrix *a = copy_matrix(scale(eigenvectors[0], 1 / norm(eigenvectors[0])));
+    Matrix *k;
+    for (i = 1; i < n; i++) {
+        k = scale(eigenvectors[i], 1 / norm(eigenvectors[i]));
+        a = augment(a, k); // [TODO] MEMORY LEAK!!
+    }
+    return a;
+}
+
 void free_matrix(Matrix *a) {
     if (   a == ERR_INVALID_SIZE
         || a == ERR_SINGULAR_MATRIX_INVERSE) {
@@ -469,6 +486,13 @@ Matrix *matrix_pow(const Matrix *a, int n) {
         }
     }
     return b;
+}
+
+double norm(const Matrix *a) {
+    if (a->cols != 1) {
+        die("Error: Invalid size matrix for norm.");
+    }
+    return sqrt(inner_product(a, a));
 }
 
 double inner_product(const Matrix *a, const Matrix *b) {

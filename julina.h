@@ -10,6 +10,7 @@ Matrix *ERR_INVALID_SIZE;
 Matrix *ERR_SINGULAR_MATRIX_INVERSE;
 Matrix *ERR_DETERMINANT_ZERO;
 Matrix *ERR_NEGATIVE_MATRIX_EXPONENT;
+Matrix *ERR_INVALID_BASIS;
 Matrix *ERR_NOT_AN_EIGENVALUE;
 
 Matrix *zero_matrix(int rows, int cols);
@@ -18,6 +19,7 @@ Matrix *new_matrix(double *array, int rows, int cols);
 Matrix *random_matrix(int rows, int cols, int low, int high);
 Matrix *copy_matrix(const Matrix *a);
 Matrix *cramer_ak_matrix(const Matrix *a, const Matrix *b, int k);
+Matrix *orthogonal_matrix(const Matrix **eigenvectors, int n);
 
 void free_matrix(Matrix *a);
 void print_matrix(const Matrix *a);
@@ -50,6 +52,8 @@ Matrix *cramer(const Matrix *a, const Matrix *b);
 Matrix *matrix_pow(const Matrix *a, int n);
 
 double inner_product(const Matrix *a, const Matrix *b);
+double norm(const Matrix *a);
+
 double dominant_eigenvalue(const Matrix *a, int m);
 Matrix *get_eigenvector(const Matrix *a, double eigenvalue);
 
