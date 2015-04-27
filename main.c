@@ -28,6 +28,17 @@ Matrix *read_matrix(char *s) {
 int main(int argc, char **argv) {
     srand(time(NULL));
 
+    long i;
+    for (i = 0; i < 10000000000; i++) {
+        Matrix *a = random_matrix(4, 5, -10, 10);
+        int n;
+        if ((n = rank(a)) < 3) {
+            printf("yooo! %d \n", n);
+            print_matrix(a);
+        }
+        free_matrix(a);
+    }
+
     Matrix *xy = read_matrix("5 2 : 1 1 2 3 3 4 4 6 5 5");
     Matrix *x = least_squares(xy);
 
