@@ -28,18 +28,11 @@ Matrix *read_matrix(char *s) {
 int main(int argc, char **argv) {
     srand(time(NULL));
 
-    Matrix *a = read_matrix("3 3 : 1 2 1 6 -1 0 -1 -2 -1");
-    double e = 3;
-    Matrix *k = get_eigenvector(a, e);
-
-    if (k == ERR_NOT_AN_EIGENVALUE) {
-        printf("Not an eigenvalue!!!!!!!\n");
-        exit(1);
-    }
+    Matrix *a = read_matrix("3 3 : 1 1 -2 -1 2 1 0 1 -1");
 
     print_matrix(a);
-    print_matrix(k);
+    printf("To the TENTH:\n");
+    print_matrix(matrix_pow(a, 10));
 
     free_matrix(a);
-    free_matrix(k);
 }

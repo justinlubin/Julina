@@ -9,6 +9,7 @@ typedef struct {
 Matrix *ERR_INVALID_SIZE;
 Matrix *ERR_SINGULAR_MATRIX_INVERSE;
 Matrix *ERR_DETERMINANT_ZERO;
+Matrix *ERR_NEGATIVE_MATRIX_EXPONENT;
 Matrix *ERR_NOT_AN_EIGENVALUE;
 
 Matrix *zero_matrix(int rows, int cols);
@@ -45,6 +46,8 @@ double det(const Matrix *a);
 Matrix *inverse(const Matrix *a);
 
 Matrix *cramer(const Matrix *a, const Matrix *b);
+
+Matrix *matrix_pow(const Matrix *a, int n);
 
 double inner_product(const Matrix *a, const Matrix *b);
 double dominant_eigenvalue(const Matrix *a, int m);

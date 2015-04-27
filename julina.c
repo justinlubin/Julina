@@ -3,8 +3,8 @@
 #include <math.h>
 #include "julina.h"
 
-#define MATRIX_SPACING 8
-#define MATRIX_FORMAT "%-8.3g"
+#define MATRIX_SPACING 10
+#define MATRIX_FORMAT "%-10.3g"
 
 #define ZERO_EPSILON 0.000000001
 
@@ -443,6 +443,32 @@ Matrix *cramer(const Matrix *a, const Matrix *b) {
         free_matrix(ak);
     }
     return x;
+}
+
+Matrix *matrix_pow(const Matrix *a, int n) {
+    if (a->rows != a->cols) {
+        return ERR_INVALID_SIZE;
+    } else if (n < 0) {
+        return ERR_NEGATIVE_MATRIX_EXPONENT;
+    } else if (n == 0) {
+        return identity_matrix(a->rows);
+    } else if (n == 1) {
+        return copy_matrix(a);
+    }
+    Matrix *b = copy_matrix(a);
+    while (n > 1) {
+        if (n % 2 == 1) {
+            // [TODO] call a plumber
+            b = multiply(a, multiply(b, b));
+            n -= 1;
+            n /= 2;
+        }
+        if (n % 2 == 0) {
+            b = multiply(b, b); // [TODO] memory leak
+            n /= 2;
+        }
+    }
+    return b;
 }
 
 double inner_product(const Matrix *a, const Matrix *b) {
