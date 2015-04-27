@@ -560,3 +560,29 @@ Matrix *get_eigenvector(const Matrix *a, double eigenvalue) {
     k->array[k->rows - 1][0] = 1;
     return k;
 }
+
+Matrix *least_squares(const Matrix *xy) {
+    if (xy->cols != 2) {
+        return ERR_INVALID_SIZE;
+    }
+    Matrix *y = diminish_right(xy, 1);
+    Matrix *a = copy_matrix(xy);
+    int i;
+    for (i = 0; i < a->rows; i++) {
+        a->array[i][1] = 1;
+    }
+    Matrix *at = transpose(a);
+    Matrix *ata = multiply(at, a);
+    Matrix *atai = inverse(ata);
+    Matrix *ataiat = multiply(atai, at);
+    Matrix *x = multiply(ataiat, y);
+
+    free_matrix(y);
+    free_matrix(a);
+    free_matrix(at);
+    free_matrix(ata);
+    free_matrix(atai);
+    free_matrix(ataiat);
+
+    return x;
+}

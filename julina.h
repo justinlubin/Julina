@@ -57,4 +57,6 @@ double norm(const Matrix *a);
 double dominant_eigenvalue(const Matrix *a, int m);
 Matrix *get_eigenvector(const Matrix *a, double eigenvalue);
 
+Matrix *least_squares(const Matrix *xy);
+
 #endif

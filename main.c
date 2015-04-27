@@ -28,12 +28,14 @@ Matrix *read_matrix(char *s) {
 int main(int argc, char **argv) {
     srand(time(NULL));
 
-    Matrix *evs[] = {read_matrix("3 1 : 1 0 1"),
-                     read_matrix("3 1 : -1 1 1"),
-                     read_matrix("3 1 : 1 2 -1")};
+    Matrix *xy = read_matrix("5 2 : 1 1 2 3 3 4 4 6 5 5");
+    Matrix *x = least_squares(xy);
 
-    Matrix *a = orthogonal_matrix(evs, 3);
-    print_matrix(a);
+    print_matrix(xy);
+    printf("Line of best fit: y = %gx + %g\n",
+           x->array[0][0],
+           x->array[1][0]);
 
-    free_matrix(a);
+    free_matrix(xy);
+    free_matrix(x);
 }
