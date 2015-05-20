@@ -20,7 +20,7 @@ Matrix *read_matrix(char *s) {
     s += 3; // space colon space
     int i;
     for (i = 0; i < size; i++) {
-        aa[i] = strtol(s, &s, 10);
+        aa[i] = strtof(s, &s);
     }
     return new_matrix(aa, rows, cols);
 }
@@ -28,25 +28,12 @@ Matrix *read_matrix(char *s) {
 int main(int argc, char **argv) {
     srand(time(NULL));
 
-    long i;
-    for (i = 0; i < 10000000000; i++) {
-        Matrix *a = random_matrix(4, 5, -10, 10);
-        int n;
-        if ((n = rank(a)) < 3) {
-            printf("yooo! %d \n", n);
-            print_matrix(a);
-        }
-        free_matrix(a);
-    }
+    Matrix *xy = read_matrix("4 5 : 0 2 4 2 2 4 1 0 5 1 2 1 0.6666666666666666666666666666 3 .3333333333333333333333333333 6 6 6 12 0");
+    xy->array[2][2] = 2.0/3;
+    xy->array[2][4] = 1.0/3;
 
-    Matrix *xy = read_matrix("5 2 : 1 1 2 3 3 4 4 6 5 5");
-    Matrix *x = least_squares(xy);
+    int r = rank(xy);
+    printf("Rank: %d\n", r);
 
-    print_matrix(xy);
-    printf("Line of best fit: y = %gx + %g\n",
-           x->array[0][0],
-           x->array[1][0]);
-
-    free_matrix(xy);
-    free_matrix(x);
+    print_matrix(rref(xy));
 }

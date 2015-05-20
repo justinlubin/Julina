@@ -278,7 +278,7 @@ int is_identity(const Matrix *a) {
         }
     }
     return 1;
-} 
+}
 
 int is_row_zero(const Matrix *a, int r) {
     int j;
@@ -323,6 +323,7 @@ void add_scaled_row(Matrix *a, int r1, int r2, double c) {
 Matrix *ref(const Matrix *a) {
     Matrix *b = copy_matrix(a);
     int k, i;
+    int o = 0; // The offset.
     for (k = 0; k < b->rows; k++) {
         // Move zero rows to bottom of matrix.
         if (is_row_zero(b, k)) {
@@ -338,24 +339,33 @@ Matrix *ref(const Matrix *a) {
             }
         }
         // Make sure we are operating on a row defined for position k.
-        if (is_zero(b->array[k][k])) {
+        if (is_zero(b->array[k][k + o])) {
             for (i = k + 1; i < b->rows; i++) {
-                if (!is_zero(b->array[i][k])) {
+                if (!is_zero(b->array[i][k + o])) {
                     swap_rows(b, k, i);
                     break;
                 }
             }
             // There is no valid row for position k.
             if (i == b->rows) {
+                if (k + o < b->cols) {
+                    k -= 1; // Reset this iteration.
+                    o += 1; // Increase the right offset by one.
+                } else {
+                    o = 0;
+                }
                 continue;
             }
         }
         // Scale position k to 1.
-        scale_row(b, k, 1/b->array[k][k]);
+        scale_row(b, k, 1/b->array[k][k + o]);
         // Eliminate position k from all rows below.
         for (i = k + 1; i < b->rows; i++) {
-            add_scaled_row(b, k, i, -b->array[i][k]);
+            add_scaled_row(b, k, i, -b->array[i][k + o]);
         }
+
+        // Reset the offset.
+        o = 0;
     }
     return b;
 }
@@ -363,14 +373,24 @@ Matrix *ref(const Matrix *a) {
 Matrix *rref(const Matrix *a) {
     Matrix *b = ref(a);
     int k, i;
+    int o = 0; // The offset.
     for (k = b->rows - 1; k >= 0; k--) {
-        if (is_zero(b->array[k][k])) {
+        if (is_zero(b->array[k][k + o])) {
+            if (k + o < b->cols) {
+                k += 1; // Reset this iteration.
+                o += 1; // Increase the right offset by one.
+            } else {
+                o = 0;
+            }
             continue;
         }
         // Eliminate position k from all rows above.
         for (i = 0; i < k; i++) {
-            add_scaled_row(b, k, i, -b->array[i][k]);
+            add_scaled_row(b, k, i, -b->array[i][k + o]);
         }
+
+        // Reset the offset.
+        o = 0;
     }
     return b;
 }
